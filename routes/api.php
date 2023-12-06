@@ -1,7 +1,9 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\ProductsReservationController;
+use App\Http\Controllers\ReleaseProductsReserveController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProductsCountController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +16,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::prefix('products')->group(function () {
+    Route::get('/count', ProductsCountController::class);
+    Route::post('/reservation', ProductsReservationController::class);
+    Route::post('/releaseReserve', ReleaseProductsReserveController::class);
 });

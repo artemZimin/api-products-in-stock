@@ -1,0 +1,223 @@
+openapi: 3.0.3
+info:
+  title: API для работы с товарами на складе
+  contact:
+    email: ziminartem.dev@gmail.com
+  version: 1.0.0
+servers:
+  - url: http://localhost
+tags:
+  - name: product
+    description: Работа с товарами
+paths:
+  /api/products/releaseReserve:
+    post:
+      summary: Освобождение резерва товаров на доступном складе
+      tags:
+        - product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReleaseReservationBody'
+      responses:
+        200:
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdatedCountResponse'
+        404:
+          description: Склад или товар не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntityNotFoundResponse'
+        400:
+          description: Запрос не может быть выполнен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockUnavailableResponse'
+        422:
+          description: Невалидное тело запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidateErrorResponse'
+        500:
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+  /api/products/reservation:
+    post:
+      summary: Резервирование товаров на доступном складе
+      tags:
+        - product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReservationBody'
+      responses:
+        200:
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdatedCountResponse'
+        404:
+          description: Склад или товар не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntityNotFoundResponse'
+        400:
+          description: Запрос не может быть выполнен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockUnavailableResponse'
+        422:
+          description: Невалидное тело запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidateErrorResponse'
+        500:
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+  /api/products/count:
+    get:
+      summary: Получение количества не зарезервированых товаров на доступном складе
+      tags:
+        - product
+      parameters:
+        - name: stock_id
+          required: false
+          in: query
+          description: ID склада
+          schema:
+            type: string
+      responses:
+        200:
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultResponse'
+        404:
+          description: Склад не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntityNotFoundResponse'
+        400:
+          description: Запрос не может быть выполнен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockUnavailableResponse'
+        422:
+          description: Невалидное тело запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidateErrorResponse'
+        500:
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+components:
+  schemas:
+    ReleaseReservationBody:
+      type: object
+      required:
+        - products
+      properties:
+        stock_id:
+          type: integer
+          example: 1
+        products:
+          type: array
+          items:
+            type: integer
+          example:
+            - 1
+            - 2
+            - 3
+    ReservationBody:
+      type: object
+      required:
+        - products
+      properties:
+        stock_id:
+          type: integer
+          example: 1
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductForReservation'
+    ProductForReservation:
+      type: object
+      required:
+        - code
+        - count
+      properties:
+        code:
+          type: integer
+          example: 1
+        count:
+          type: integer
+          example: 1
+    UpdatedCountResponse:
+      type: object
+      properties:
+        updated:
+          type: integer
+          example: 3
+    ResultResponse:
+      type: object
+      properties:
+        result:
+          type: integer
+          example: 4
+    EntityNotFoundResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Product 1 not found.
+    StockUnavailableResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Stock 1 not available.
+    ServerErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Server error.
+    ValidateErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: The products field is required.
+        errors:
+          type: object
+          example:
+            products:
+              - The products field is required.
+

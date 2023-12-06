@@ -3,20 +3,24 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Product;
+use App\Models\Stock;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
+    private const SCALE = 3;
     /**
      * Seed the application's database.
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
+        Stock::factory(self::SCALE)->create();
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        Stock::all()->each(function (Stock $stock) {
+            for ($i = 1; $i <= self::SCALE; $i++) {
+                Product::factory(['code' => $i, 'stock_id' => $stock->getId()])->create();
+            }
+        });
     }
 }
